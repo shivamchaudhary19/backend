@@ -1,6 +1,5 @@
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,19 +9,36 @@ cloudinary.config({
 
 const uploadOnCloudinary = async (localFilePath) => {
     try {
-        if(!localFilePath) return null 
+        if (!localFilePath) return null;
+
         //upload the file on cloudinary
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto"
-        })
+        });
+
         //file has been uploaded successfully
         console.log("File uploaded on cloudinary", response.url);
-        return response
+
+        // remove the locally saved temporary file
+        fs.unlink(localFilePath, (err) => {
+            if (err) {
+                console.log("Error removing local file:", err);
+            }
+        });
+
+        return response;
+
     } catch (error) {
-        fs.unlink(localFilePath) // removes the locally saved temporary file as the upload operation got failed 
+        console.log("CLOUDINARY ERROR:", error);
+
+        fs.unlink(localFilePath, (err) => {
+            if (err) {
+                console.log("Error removing local file:", err);
+            }
+        });
+
         return null;
     }
-}
+};
 
-
-export {uploadOnCloudinary}
+export { uploadOnCloudinary };
