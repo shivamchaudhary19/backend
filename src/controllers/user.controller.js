@@ -11,24 +11,18 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 const registerUser = asyncHandler(async (req, res) => { 
 
     // Get user details from frontend
-
     // Validation - not empty
-
     // check id user already exists: username , email
-
     // check for images, check for avatar
-
     // upload them on cloudinary, avatar
-
     // create user object - create entry in db
-
     // remove password and refresh token field from response
-
     // check for user creation
-
     // return res
 
-    const { fullName, email, username, password } = req.body
+    const { fullName, email, username, password } = req.body;
+
+    // console.log(req.body);
 
     /**
     Not good , we've to make if statement check for every field seperately
@@ -54,7 +48,13 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const avatarLocalPath = req.files?.avatar?.[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
+    // console.log(req.files);
+    let coverImageLocalPath;
+
+    if( req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar files is required")
