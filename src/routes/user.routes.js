@@ -10,7 +10,8 @@ import {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    getWatchHistory
+    getWatchHistory,
+    publishVideo
 } from "../controllers/user.controller.js"
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
@@ -45,5 +46,14 @@ router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvat
 router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)
 router.route("/history").get(verifyJWT, getWatchHistory)
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
+
+router.route("/publish").post(
+    verifyJWT,
+    upload.fields([
+        { name: "videoFile", maxCount: 1 },
+        { name: "thumbnails", maxCount: 1 }
+    ]),
+    publishVideo
+)
 
 export default router 

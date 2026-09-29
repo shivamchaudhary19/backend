@@ -7,7 +7,8 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 import { ApiResponse } from "../utils/ApiResponse.js"
-
+import mongoose from "mongoose";
+import { Video } from "../models/video.model.js"
 import jwt from "jsonwebtoken"
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -230,13 +231,9 @@ const logoutUser = asyncHandler(async (req, res) => {
         req.user._id,
 
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1 // this removes the field frim document
             }
-        },
-
-        {
-            new: true
         }
 
     )
@@ -621,10 +618,7 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
     )
 })
 
-// check what aggregate is returning
-console.log(channel);
-
-const getWatchHistory =  asyncHandler(async(req, res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
             $match: {
@@ -633,14 +627,14 @@ const getWatchHistory =  asyncHandler(async(req, res) => {
         },
         {
             $lookup: {
-                form: "videos",
-                localField: "watchHoistory",
-                foreignField: "id",
-                as : "watchHistory",
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
                 pipeline: [
                     {
                         $lookup: {
-                            from: "user",
+                            from: "users",
                             localField: "owner",
                             foreignField: "_id",
                             as: "owner",
@@ -656,28 +650,91 @@ const getWatchHistory =  asyncHandler(async(req, res) => {
                         }
                     },
                     {
-                        $addField:{
+                        $addFields: {
                             owner: {
                                 $first: "$owner"
                             }
                         }
                     }
-                    
                 ]
             }
         }
-    ])
+    ]);
 
-    return res
-    .status(200)
-    .json(
+    return res.status(200).json(
         new ApiResponse(
             200,
             user[0].watchHistory,
-            "Watch history fetched fetched successfully"
+            "Watch history fetched successfully"
+        )
+    );
+});
+
+const publishVideo = asyncHandler(async (req, res) => {
+
+    const { title, description } = req.body
+
+    // 1. Validate text fields
+    if (!title || !description) {
+        throw new ApiError(
+            400,
+            "Title and description are required"
+        )
+    }
+
+    // 2. Get uploaded files from Multer
+    const videoLocalPath = req.files?.videoFile?.[0]?.path
+    const thumbnailLocalPath = req.files?.thumbnails?.[0]?.path
+
+    if (!videoLocalPath) {
+        throw new ApiError(400, "Video file is required")
+    }
+
+    if (!thumbnailLocalPath) {
+        throw new ApiError(400, "Thumbnail is required")
+    }
+
+    // 3. Upload files to Cloudinary
+    const video = await uploadOnCloudinary(videoLocalPath)
+
+    if (!video?.url) {
+        throw new ApiError(
+            500,
+            "Error while uploading video"
+        )
+    }
+
+    const thumbnail = await uploadOnCloudinary(
+        thumbnailLocalPath
+    )
+
+    if (!thumbnail?.url) {
+        throw new ApiError(
+            500,
+            "Error while uploading thumbnail"
+        )
+    }
+
+    // 4. Save video details in MongoDB
+    const createdVideo = await Video.create({
+        videoFile: video.url,
+        thumbnails: thumbnail.url,
+        title,
+        description,
+        duration: video.duration,
+        owner: req.user._id,
+        isPublished: true
+    })
+
+    // 5. Send response
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            createdVideo,
+            "Video published successfully"
         )
     )
-})
+});
 
 export {
     registerUser,
@@ -690,4 +747,6 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
+    getWatchHistory,
+    publishVideo
 }

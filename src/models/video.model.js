@@ -29,8 +29,8 @@ const videoSchema = new Schema (
         },
          
         views: {
-            type: Number, 
-            required: 0 
+            type: Number,
+            default: 0
         },
         
         isPublished: {
@@ -49,6 +49,6 @@ const videoSchema = new Schema (
     }
 )
 
-videoSchema.plugins(mongooseAggregatePaginate)
+videoSchema.plugin(mongooseAggregatePaginate)
 
 export const Video = mongoose.model("Video", videoSchema)
