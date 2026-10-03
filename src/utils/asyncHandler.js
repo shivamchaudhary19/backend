@@ -16,7 +16,7 @@ export {asyncHandler}
 //         await fn(req, res, next)
 //     } catch (error) {
 //         res.status(err.code || 500).json({
-//             sucess: true,
+//             sucess: false,
 //             message: err.message
 //         })
 //     }
