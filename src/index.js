@@ -18,8 +18,7 @@ connectDB()
     console.log("MONGO db connection failed !!!",err);
 })
 
-/* 
-(async () => {
+/* (async () => {
     try {
         await mongoose.connect(`${process.env.MONGODB_URI}/ ${DB_NAME}`)
         app.on("error", (error) => {

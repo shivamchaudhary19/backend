@@ -1,11 +1,11 @@
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import { v2 as cloudinary } from "cloudinary"; // same mondatory syntax
+import fs from "fs"; // this is file system
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
-});
+}); // cloudinary configuration
 
 const uploadOnCloudinary = async (localFilePath) => {
     try {

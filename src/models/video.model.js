@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
 const videoSchema = new Schema (
     {
-        videoFile: {
+        videoFile: { // mongodb allows you tostore these small media files , images to store as media file, but it gives too much loas to database , not a good practice
             type: String, //cloudinary url 
             required: true 
         },
@@ -33,7 +33,7 @@ const videoSchema = new Schema (
             default: 0
         },
         
-        isPublished: {
+        isPublished: { //is video publically avaible or not. 
             type: Boolean, 
             required: true 
         },
