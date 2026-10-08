@@ -19,13 +19,14 @@ import { verifyJWT } from "../middlewares/auth.middleware.js"
 const router = Router()
 
 router.route("/register").post(
+    // now middleware part 
     upload.fields([
         {
-            name: "avatar",
+            name: "avatar", // name of file
             maxCount: 1
         },
         {
-            name: "coverImage",
+            name: "coverImage", // name of another file
             maxCount: 1
         }
     ]),

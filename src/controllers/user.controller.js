@@ -51,11 +51,13 @@ const registerUser = asyncHandler(async (req, res) => {
     // check for user creation
     // return res
 
-    const { fullName, email, username, password } = req.body
+    const { fullName, email, username, password } = req.body // We get these details in req.body
+
+    console.log(req.body);
 
     if (
         [fullName, email, username, password]
-            .some((field) => field?.trim() === "")
+            .some((field) => field?.trim() === "") // rather than writing many if conditions for every firlds , we just used one if condition for all of the fields
     ) {
 
         throw new ApiError(400, "All fields are required")
@@ -64,10 +66,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const existedUser = await User.findOne({
         $or: [{ username }, { email }]
-    })
+    }) // to find whether the user already exists or not
 
     if (existedUser) {
 
+        // throw error if the user already exists
         throw new ApiError(
             409,
             "User with email or username already exists"
@@ -75,9 +78,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
     }
 
-    const avatarLocalPath = req.files?.avatar?.[0]?.path
+    const avatarLocalPath = req.files?.avatar?.[0]?.path // in routes , there's middleware , it added more fields in body , multer gives req.files
 
-    let coverImageLocalPath
+    console.log(req.files);
+
 
     if (
         req.files &&
@@ -85,7 +89,7 @@ const registerUser = asyncHandler(async (req, res) => {
         req.files.coverImage.length > 0
     ) {
 
-        coverImageLocalPath = req.files.coverImage[0].path
+        let coverImageLocalPath = req.files.coverImage[0].path
 
     }
 
@@ -111,7 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
         avatar: avatar.url,
 
-        coverImage: coverImage?.url || "",
+        coverImage: coverImage?.url || "", // cover image is optional
 
         email,
 
@@ -121,7 +125,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     })
 
-    const createdUser = await User.findById(user._id).select(
+    // we don't want to give password and refresh token in response for security purpose
+    const createdUser = await User.findById(user._id).select( // mongodb automatically attack a field "_id" with every entry, so we can findById
         "-password -refreshToken"
     )
 
