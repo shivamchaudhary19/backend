@@ -10,6 +10,7 @@ architecture, error handling, and scalable project structure.
 
 > **Project Status:** Actively under development
 
+- **Model Link :** [Model Link](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)
 ------------------------------------------------------------------------
 
 ## 📌 Project Overview
