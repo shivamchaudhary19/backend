@@ -57,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (
         [fullName, email, username, password]
-            .some((field) => field?.trim() === "") // rather than writing many if conditions for every firlds , we just used one if condition for all of the fields
+            .some((field) => field?.trim() === "") // rather than writing many if conditions for every fields , we just used one "if" condition for all of the fields
     ) {
 
         throw new ApiError(400, "All fields are required")
@@ -82,6 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     console.log(req.files);
 
+    let coverImageLocalPath;
 
     if (
         req.files &&
@@ -89,7 +90,7 @@ const registerUser = asyncHandler(async (req, res) => {
         req.files.coverImage.length > 0
     ) {
 
-        let coverImageLocalPath = req.files.coverImage[0].path
+        coverImageLocalPath = req.files.coverImage[0].path
 
     }
 
