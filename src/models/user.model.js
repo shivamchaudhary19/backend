@@ -36,7 +36,7 @@ const userSchema = new Schema(
         coverImage: {
             type: String, 
         },
-        watchHistor: [
+        watchHistory: [
             {
                 type: Schema.Types.ObjectId,
                 ref: "Video"
@@ -57,7 +57,7 @@ userSchema.pre("save", async function (next) // pre runs just before saving the 
         if(!this.isModified("password")) return next();
 
         this.password = await bcrypt.hash(this.password, 10)
-        next()
+        next()  //Means i've finished this middleware, continue with the save operation
     } // don't write arrow function here, ,we don't have context of this in arrow function, but here we need "this"
 )
 

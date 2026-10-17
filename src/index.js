@@ -8,15 +8,26 @@ dotenv.config({
 })
  
 
+// First, connect to the MongoDB database.
+// connectDB() returns a Promise, so we use .then() to run the code below
+// only after the database connection succeeds.
 connectDB()
-.then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-        console.log(`Server is running at port: ${process.env.PORT}`)
+    .then(() => {
+
+        // Start the Express server only after MongoDB is connected.
+        // process.env.PORT is provided by the deployment platform;
+        // if it's unavailable, use port 8000 as the fallback.
+        app.listen(process.env.PORT || 8000, () => {
+
+            // Log a message when the server starts listening for requests.
+            console.log(`Server is running at port: ${process.env.PORT}`)
+        })
     })
-})
-.catch((err) => {
-    console.log("MONGO db connection failed !!!",err);
-})
+
+    // If the database connection fails, this .catch() block handles the error.
+    .catch((err) => {
+        console.log("MONGO db connection failed !!!", err);
+    });
 
 /* (async () => {
     try {
