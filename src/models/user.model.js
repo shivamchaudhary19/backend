@@ -52,12 +52,11 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save", async function (next) // pre runs just before saving the data, here we're adding password
+userSchema.pre("save", async function () // pre runs just before saving the data, here we're adding password
     {
-        if(!this.isModified("password")) return next();
+        if(!this.isModified("password")) return ; //Means i've finished this middleware, continue with the save operation
 
         this.password = await bcrypt.hash(this.password, 10)
-        next()  //Means i've finished this middleware, continue with the save operation
     } // don't write arrow function here, ,we don't have context of this in arrow function, but here we need "this"
 )
 
