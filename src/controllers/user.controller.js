@@ -11,6 +11,15 @@ import mongoose from "mongoose";
 import { Video } from "../models/video.model.js"
 import jwt from "jsonwebtoken"
 
+
+// Find the user in the database using their ID.
+// Generate a new access token for authentication.
+// Generate a new refresh token to obtain future access tokens.
+// Store the new refresh token in the user's database record.
+// Save the updated user without running schema validation.
+// Return both tokens to the caller.
+// Log the original error for debugging.
+// Throw an ApiError if token generation fails.
 const generateAccessAndRefreshTokens = async (userId) => {
 
     try {
@@ -266,7 +275,18 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 })
 
-
+// 1. Get the refresh token from cookies or the request body.
+// 2. Check whether the refresh token exists.
+// 3. Verify the token using `jwt.verify()` and the refresh-token secret.
+// 4. Find the user in MongoDB using the decoded token's `_id`.
+// 5. Check whether wthe user exists.
+// 6. Compare the incoming refresh token with the token stored in MongoDB.
+// 7. Configure secure cookie options.
+// 8. Generate new access and refresh tokens.
+// 9. Save the new refresh token in MongoDB.
+// 10. Send the new tokens to the client through cookies.
+// 11. Return a success response.
+// 12. Handle invalid or expired tokens and unexpected errors.
 const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const incomingRefreshToken =
